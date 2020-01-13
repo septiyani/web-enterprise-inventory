@@ -489,6 +489,15 @@ class Ion_auth
 
 		return $this->in_group($admin_group, $id);
 	}
+	
+	public function is_member($id = FALSE)
+	{
+		$this->ion_auth_model->trigger_events('is_member');
+
+		$admin_group = $this->config->item('member_group', 'ion_auth');
+
+		return $this->in_group($admin_group, $id);
+	}
 
 	/**
 	 * @param int|string|array $check_group group(s) to check

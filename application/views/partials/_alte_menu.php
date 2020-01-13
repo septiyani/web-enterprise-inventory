@@ -33,23 +33,23 @@
           </a>
           <ul class="treeview-menu">
             <li><a href="<?php echo base_url('stock/stock_in') ?>"><i class="fa fa-plus"></i> Stock IN</a></li>
-            <li><a href="<?php echo base_url('stock/stock_out') ?>"><i class="fa fa-list-alt"></i> Stock OUT</a></li>
+            <li><a href="<?php echo base_url('stock/stock_out') ?>"><i class="fa fa-minus"></i> Stock OUT</a></li>
             
           </ul>
         </li>
 				<li class="header">MASTER</li>
-				<li>
+				<!--li>
 					<a href="<?php echo base_url('categories') ?>">
 						<i class="fa fa-star"></i> <span>Categories</span>
 					</a>
-				</li>
+				</li-->
 				
 				<li>
 					<a href="<?php echo base_url('items') ?>">
 						<i class="fa fa-archive"></i> <span>Items</span>
 					</a>
 				</li>
-				<li>
+				<!--li>
 					<a href="<?php echo base_url('locations') ?>">
 						<i class="fa fa-map-marker"></i> <span>Locations</span>
 					</a>
@@ -58,13 +58,9 @@
 					<a href="<?php echo base_url('color') ?>">
 						<i class="fa fa-tint"></i> <span>Color</span>
 					</a>
-				</li>
+				</li-->
 				<?php if ($this->ion_auth->is_admin()): ?>
-					<li>
-						<a href="<?php echo base_url('status') ?>">
-							<i class="fa fa-heart"></i> <span>Inventory Status</span>
-						</a>
-					</li>
+					
 					<!-- Menu Admin -->
 					<li class="header">SETTINGS</li>
 					<li>
