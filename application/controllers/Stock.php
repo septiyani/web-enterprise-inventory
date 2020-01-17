@@ -16,7 +16,7 @@ class Stock extends CI_Controller {
 		// model
 		$this->load->model(
 			array(
-				'items_model',
+				'stock_model',
 				'profile_model'
 			)
 		);
@@ -47,7 +47,7 @@ class Stock extends CI_Controller {
 		}
 		// Logged in
 		else{
-			$this->data['data_list'] = $this->items_model->get_items();
+			$this->data['data_list'] = $this->stock_model->get_items();
 
 			// Set pagination
 			$config['base_url']         = base_url('items/index');
@@ -57,11 +57,11 @@ class Stock extends CI_Controller {
 			$this->pagination->initialize($config);
 
 			// Get datas and limit based on pagination settings
-			if ($page=="") { $page = 1; }
-			$this->data['data_list'] = $this->items_model->get_items("",
-				$config['per_page'],
-				( $page - 1 ) * $config['per_page']
-			);
+			// if ($page=="") { $page = 1; }
+			// $this->data['data_list'] = $this->items_model->get_items("",
+			// 	$config['per_page'],
+			// 	( $page - 1 ) * $config['per_page']
+			// );
 			// $this->data['last_query'] = $this->db->last_query();
 			$this->data['pagination'] = $this->pagination->create_links();
 
@@ -78,7 +78,7 @@ class Stock extends CI_Controller {
 		}
 	}
 	
-	 public function add()
+	 public function update()
 	{
 		// Not logged in, redirect to home
 		if (!$this->ion_auth->logged_in()){
@@ -87,26 +87,25 @@ class Stock extends CI_Controller {
 		// Logged in
 		else {
 			// input validation rules
-			$this->form_validation->set_rules('code', 'Code', 'alpha_numeric|trim|required|callback__code_check');
-			$this->form_validation->set_rules('item_name', 'Name', 'alpha_numeric_spaces|trim|required');
-			$this->form_validation->set_rules('desc', 'Detail', 'trim');
+			$this->form_validation->set_rules('qty', 'Qty', 'numeric|trim|required');
 
 			// check if there's valid input
 			if (isset($_POST) && !empty($_POST)) {
 				// validation run
 				if ($this->form_validation->run() === TRUE) {
 					$data = array(
-						'code'    => $this->input->post('code'),
-						'item_name'    => $this->input->post('item_name'),
-						'desc'  => $this->input->post('desc')
+						'item_id'    => $this->input->post('item'),
+						'qty'    => $this->input->post('qty')
 					);
+					// echo json_encode($_POST);die;
+					$type = $this->input->post('type');
 
 					// check to see if we are inserting the data
-					if ($this->items_model->insert_items($data)) {
+					if ($this->stock_model->insert_stock($data, $type)) {
 						// Success message
 						$this->session->set_flashdata('message',
 							$this->config->item('success_start_delimiter', 'ion_auth')
-							."items Saved Successfully!".
+							."Stock Successfully Updated!".
 							$this->config->item('success_end_delimiter', 'ion_auth')
 						);
 
@@ -116,14 +115,14 @@ class Stock extends CI_Controller {
 						// Error message
 						$this->session->set_flashdata('message',
 							$this->config->item('error_start_delimiter', 'ion_auth')
-							."items Saving Failed!".
+							."Failed To Update!".
 							$this->config->item('error_end_delimiter', 'ion_auth')
 						);
 					}
 					redirect('items', 'refresh');
 				}
 			}
-			$this->data['data_list'] = $this->items_model->get_items();
+			$this->data['data_list'] = $this->stock_model->get_items();
 			$this->data['open_form'] = "open";
 
 			// Set pagination
@@ -132,16 +131,6 @@ class Stock extends CI_Controller {
 			$config['total_rows']       = count($this->data['data_list']->result());
 			$config['per_page']         = 15;
 			$this->pagination->initialize($config);
-
-			// Get datas and limit based on pagination settings
-			$page = 1;
-			$this->data['data_list'] = $this->items_model->get_items("",
-				$config['per_page'],
-				( $page - 1 ) * $config['per_page']
-			);
-			
-			// $this->data['last_query'] = $this->db->last_query();
-			$this->data['pagination'] = $this->pagination->create_links();
 
 			// set the flash data error message if there is one
 			$this->data['message'] = (validation_errors()) ? validation_errors() :
@@ -153,110 +142,6 @@ class Stock extends CI_Controller {
 			$this->load->view('partials/_alte_footer');
 			$this->load->view('inv_item/js');
 			$this->load->view('js_script');
-		}
-	}
-	
-	public function edit($id)
-	{
-		// Not logged in, redirect to home
-		if (!$this->ion_auth->logged_in()) {
-			redirect('auth/login/items', 'refresh');
-		}
-		// Logged in
-		else {
-			// input validation rules
-			$this->form_validation->set_rules('desc', 'Detail', 'trim');
-
-			// check if there's valid input
-			if (isset($_POST) && !empty($_POST)) {
-				// validation run
-				if ($this->form_validation->run() === TRUE) {
-					$data = array(
-						 
-						'desc'  => $this->input->post('desc')
-					);
-
-					// check to see if we are updating the data
-					if ($this->items_model->update_items($id, $data)) {
-						$this->session->set_flashdata('message',
-							$this->config->item('success_start_delimiter', 'ion_auth')
-							."items Updated!".
-							$this->config->item('success_end_delimiter', 'ion_auth')
-						);
-
-						
-
-					}
-					else {
-						$this->session->set_flashdata('message',
-							$this->config->item('error_start_delimiter', 'ion_auth')
-							."items Update Failed!".
-							$this->config->item('error_end_delimiter', 'ion_auth')
-						);
-					}
-					redirect('items', 'refresh');
-				}
-			}
-			// Get data
-			$this->data['data_list'] = $this->items_model->get_items($id);
-			$this->data['id']        = $id;
-
-			// set the flash data error message if there is one
-			$this->data['message'] = (validation_errors()) ? validation_errors() :
-			$this->session->flashdata('message');
-
-			$this->load->view('partials/_alte_header', $this->data);
-			$this->load->view('partials/_alte_menu');
-			$this->load->view('inv_item/edit');
-			$this->load->view('partials/_alte_footer');
-			$this->load->view('inv_item/js');
-			$this->load->view('js_script');
-		}
-	}
-	
-	public function delete($id)
-	{
-		// Jika tidak login, kembalikan ke halaman utama
-		if (!$this->ion_auth->logged_in())
-		{
-			redirect('auth/login/items', 'refresh');
-		}
-		// Jika login
-		else
-		{
-			// set the flash data error message if there is one
-			$this->data['message'] = (validation_errors()) ? validation_errors() :
-			$this->session->flashdata('message');
-
-			// check if there's valid input
-			if (isset($_POST) && !empty($_POST)) {
-
-				// input validation rules
-				$this->form_validation->set_rules('id', 'ID', 'trim|numeric|required');
-
-				// validation run
-				if ($this->form_validation->run() === TRUE) {
-					
-
-					// check to see if we are updating the data
-					if ($this->items_model->delete_item($id)) {
-						$this->session->set_flashdata('message',
-							$this->config->item('success_start_delimiter', 'ion_auth')
-							."items Deleted!".
-							$this->config->item('success_end_delimiter', 'ion_auth')
-						);
-					}
-					else {
-						$this->session->set_flashdata('message',
-							$this->config->item('error_start_delimiter', 'ion_auth')
-							."items Delete Failed!".
-							$this->config->item('error_end_delimiter', 'ion_auth')
-						);
-					}
-				}
-			}
-			// Always redirect no matter what!
-			redirect('items', 'refresh');
 		}
 	}
 	
@@ -272,6 +157,84 @@ class Stock extends CI_Controller {
 				'_code_check', 'The {field} already exists.'
 			);
 			return FALSE;
+		}
+	}
+
+	public function stock_in(){
+		if (!$this->ion_auth->logged_in()){
+			redirect('auth/login/items', 'refresh');
+		}
+		// Logged in
+		else{
+			$this->data['data_list'] = $this->stock_model->get_items();
+
+			// Set pagination
+			$config['base_url']         = base_url('stock/index');
+			$config['use_page_numbers'] = TRUE;
+			$config['total_rows']       = count($this->data['data_list']->result());
+			$config['per_page']         = 15;
+			$this->pagination->initialize($config);
+
+			// set the flash data error message if there is one
+			$this->data['message']   = (validation_errors()) ? validation_errors() :
+			$this->session->flashdata('message');
+
+			$this->data['qty'] = array(
+				'name' => 'qty',
+				'id' => 'qty',
+				'type' => 'number',
+				'min' => "0",
+				'value' => $this->form_validation->set_value('qty'),
+                'class' => 'form-control',
+                'required' => 'required',
+			);
+			// var_dump($this->data['data_list']);
+
+			$this->load->view('partials/_alte_header', $this->data);
+			$this->load->view('partials/_alte_menu');
+			$this->load->view('stock/stock_in');
+			$this->load->view('partials/_alte_footer');
+			$this->load->view('inv_item/js');
+			$this->load->view('js_script');
+		}
+	}
+
+	public function stock_out(){
+		if (!$this->ion_auth->logged_in()){
+			redirect('auth/login/items', 'refresh');
+		}
+		// Logged in
+		else{
+			$this->data['data_list'] = $this->stock_model->get_items();
+
+			// Set pagination
+			$config['base_url']         = base_url('stock/index');
+			$config['use_page_numbers'] = TRUE;
+			$config['total_rows']       = count($this->data['data_list']->result());
+			$config['per_page']         = 15;
+			$this->pagination->initialize($config);
+
+			// set the flash data error message if there is one
+			$this->data['message']   = (validation_errors()) ? validation_errors() :
+			$this->session->flashdata('message');
+
+			$this->data['qty'] = array(
+				'name' => 'qty',
+				'id' => 'qty',
+				'type' => 'number',
+				'min' => "0",
+				'value' => $this->form_validation->set_value('qty'),
+                'class' => 'form-control',
+                'required' => 'required',
+			);
+			// var_dump($this->data['data_list']);
+
+			$this->load->view('partials/_alte_header', $this->data);
+			$this->load->view('partials/_alte_menu');
+			$this->load->view('stock/stock_out');
+			$this->load->view('partials/_alte_footer');
+			$this->load->view('inv_item/js');
+			$this->load->view('js_script');
 		}
 	}
 }
