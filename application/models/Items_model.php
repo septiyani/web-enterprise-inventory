@@ -13,7 +13,6 @@ class Items_model extends CI_Model
 		parent::__construct();
 
 		$this->data_table = 'inv_items';
-		$this->data_table2 = 'inv_stock';
 		$this->users_table     = 'users';
 		$this->loggedinuser    = $this->ion_auth->user()->row();
 		
