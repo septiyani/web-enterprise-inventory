@@ -34,8 +34,8 @@ class Welcome extends CI_Controller {
 			array(
 				'profile_model',
 				'inventory_model',
-				'categories_model',
-				'locations_model',
+				'items_model',
+				 
 			)
 		);
 
@@ -53,10 +53,8 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		// inventory by category summary
-		$this->data['total_inventory'] = count($this->inventory_model->get_inventory()->result());
-		$this->data['total_category']  = count($this->categories_model->get_categories()->result());
-		$this->data['total_location']  = count($this->locations_model->get_locations()->result());
-		$this->data['summary']         = $this->inventory_model->get_inventory_by_category_summary();
+		$this->data['total_inventory'] = count($this->items_model->get_items()->result());
+		 
 
 		$this->load->view('partials/_alte_header', $this->data);
 		$this->load->view('partials/_alte_menu');

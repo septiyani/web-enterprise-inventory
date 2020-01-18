@@ -98,7 +98,8 @@ $autoload['drivers'] = array();
 $autoload['helper'] = array(
 	'url', 
 	'language', 
-	'date'
+	'date',
+	'file'
 	);
 
 /*

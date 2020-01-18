@@ -13,6 +13,7 @@ class Items_model extends CI_Model
 		parent::__construct();
 
 		$this->data_table = 'inv_items';
+		$this->data_stock = 'inv_stock';
 		$this->users_table     = 'users';
 		$this->loggedinuser    = $this->ion_auth->user()->row();
 		
@@ -95,6 +96,58 @@ class Items_model extends CI_Model
 		}
 		return FALSE;
 	}
+	
+	
+	public function get_items_by_keyword($filters,$limit='', $start='', $order_method='desc')
+	{
+		$id="";
+		$from_date="";
+		$end_date="";
+		if ($filters!="") {
+			foreach ($filters as $key => $value) {
+			if ($value !="" ) {
+				if($key =="id" && $value !="null"){
+					$id= "and id = $value";
+				}
+				if($key =="from_date" ){
+					$from_date= "and stock_date >= $value ";
+				}
+				
+				if($key =="end_date"){
+					$end_date= "and stock_date <= $value ";
+				}
+				
+			}
+		}
+			
+		}
+		$query = $this->db->query(
+            "select id,item_name,code,stock_date,sum(qty_in) as qty_in, sum(qty_out) as qty_out from(
+			SELECT b.id,b.item_name,b.code,DATE_FORMAT(a.stock_date, '%d/%m/%Y') as stock_date,SUM(qty) as qty_in, 0 as qty_out 
+			FROM inv_stock a, inv_items b 
+			where a.item_id = b.id 
+			and a.flag ='1'
+			group by DATE_FORMAT(a.stock_date, '%d%m%Y'),b.code,b.id
+
+			union all
+
+			SELECT b.id,b.item_name,b.code,DATE_FORMAT(a.stock_date, '%d/%m/%Y') as stock_date,0 as qty_in, sum(a.qty) as qty_out 
+			FROM inv_stock a, inv_items b 
+			where a.item_id = b.id 
+			and a.flag ='0'
+			group by DATE_FORMAT(a.stock_date, '%d%m%Y'),b.code,b.id
+			) x
+			where 1=1
+			$id
+			$from_date 
+			$end_date 
+			group by code,stock_date,id
+			");
+		
+		return $query->result_array();
+    }
+	
+	 
 
 }
 

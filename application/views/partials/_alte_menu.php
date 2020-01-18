@@ -34,6 +34,7 @@
           <ul class="treeview-menu">
             <li><a href="<?php echo base_url('stock/stock_in') ?>"><i class="fa fa-plus"></i> Stock IN</a></li>
             <li><a href="<?php echo base_url('stock/stock_out') ?>"><i class="fa fa-minus"></i> Stock OUT</a></li>
+            <li><a href="<?php echo base_url('inventory') ?>"><i class="fa fa-archive"></i> Inventory Status</a></li>
             
           </ul>
         </li>
