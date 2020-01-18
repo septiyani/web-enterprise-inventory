@@ -27,7 +27,8 @@ class Items_model extends CI_Model
 			$this->data_table.".desc, ".
 			$this->users_table.".username, ".
 			$this->users_table.".first_name, ".
-			$this->users_table.".last_name"
+			$this->users_table.".last_name".
+			", COALESCE(b.qty,0) as qty"
 		);
 		$this->db->from($this->data_table);
 
@@ -35,6 +36,11 @@ class Items_model extends CI_Model
 		$this->db->join(
 			$this->users_table,
 			$this->data_table.'.created_by = '.$this->users_table.'.username',
+			'left');
+
+		$this->db->join(
+			'(SELECT a.item_id, a.qty_in - COALESCE(b.qty_out, 0) as qty FROM (SELECT item_id, SUM(qty) as qty_in FROM inv_stock WHERE flag = 1 GROUP BY item_id) a LEFT JOIN (SELECT item_id, SUM(qty) as qty_out FROM inv_stock WHERE flag = 0 GROUP BY item_id) b ON a.item_id = b.item_id) AS b',
+			$this->data_table.'.code = b.item_id',
 			'left');
 		
 		// if limit and start provided
@@ -49,7 +55,8 @@ class Items_model extends CI_Model
 
 		$datas = $this->db->get();
 		return $datas;
-    }
+	}
+	
 	public function insert_items($datas)
 	{
 		// user and datetime

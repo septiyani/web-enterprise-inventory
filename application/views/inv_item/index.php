@@ -81,6 +81,7 @@
 								<tr>
 									<th>Code</th>
 									<th>Name</th>
+									<th>Stock</th>
 									<th>Detail</th>
 									<th>#</th>
 								</tr>
@@ -91,6 +92,7 @@
 								<tr>
 									<td><?php echo $data->code; ?></td>
 									<td><?php echo $data->item_name; ?></td>
+									<td><?php echo $data->qty; ?></td>
 									<td><?php echo $data->desc; ?></td>
 									
 									<td width="15%">

@@ -144,3 +144,18 @@ $lang['reset_password_new_password_confirm_label']            = 'Confirm New Pas
 $lang['reset_password_submit_btn']                            = 'Change';
 $lang['reset_password_validation_new_password_label']         = 'New Password';
 $lang['reset_password_validation_new_password_confirm_label'] = 'Confirm New Password';
+
+// Inventory
+$lang['stock_in_heading']   = 'Inventory';
+$lang['stock_in']           = 'Stock In';
+$lang['stock_in_label']     = 'Please fill the form';
+$lang['stock_in_item_label']     = 'Item';
+$lang['stock_in_qty_label']     = 'Quantity';
+$lang['stock_in_submit_btn']     = 'Update Stock';
+
+$lang['stock_out_heading']   = 'Inventory';
+$lang['stock_out']           = 'Stock Out';
+$lang['stock_out_label']     = 'Please fill the form';
+$lang['stock_out_item_label']     = 'Item';
+$lang['stock_out_qty_label']     = 'Quantity';
+$lang['stock_out_submit_btn']     = 'Update Stock';
